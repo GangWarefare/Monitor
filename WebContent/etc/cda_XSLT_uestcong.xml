@@ -1,0 +1,722 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:n3="http://www.w3.org/1999/xhtml" xmlns:n1="urn:hl7-org:v3" xmlns:n2="urn:hl7-org:v3/meta/voc" xmlns:voc="urn:hl7-org:v3/voc" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<xsl:output method="html" indent="yes" version="4.01" encoding="ISO-8859-1" doctype-public="-//W3C//DTD HTML 4.01//EN"/>
+
+<!-- CDA document -->
+
+<xsl:variable name="tableWidth">50%</xsl:variable>
+
+<xsl:variable name="title">
+    <xsl:choose>
+         <xsl:when test="/n1:ClinicalDocument/n1:title">
+             <xsl:value-of select="/n1:ClinicalDocument/n1:title"/>
+         </xsl:when>
+             <xsl:otherwise>Clinical Document</xsl:otherwise>
+    </xsl:choose>
+</xsl:variable>
+
+<xsl:template match="/">
+<xsl:apply-templates select="n1:ClinicalDocument"/>
+</xsl:template>
+
+<xsl:template match="n1:ClinicalDocument">
+        <html>
+            <head>
+		<!-- <meta name='Generator' content='&CDA-Stylesheet;'/> -->
+                <xsl:comment>
+                        Do NOT edit this HTML directly, it was generated via an XSLt
+                        transmation from the original release 2 CDA Document.
+                </xsl:comment>
+                <title>
+                     <xsl:value-of select="$title"/>
+                </title>
+	    </head>
+            <xsl:comment>				
+              Derived from HL7 Finland R2 Tyylitiedosto: Tyyli_R2_B3_01.xslt
+	      Updated by   Calvin E. Beebe,   Mayo Clinic - Rochester Mn.
+            </xsl:comment>
+            <body>   
+            
+         
+<table border="1" width="100%">
+	<tr>
+		<td>   <h1 align="center"><xsl:value-of select="$title"/></h1></td>
+	</tr>
+	<tr>
+		<td>
+		<!-- 基本資料 --> 
+		<table width='100%' border="1" bgcolor="#DDDDDD">
+		   <tr>
+		   <!-- 姓名-->
+					   <td width='10%'  align='left'><b><xsl:text>患者姓名：</xsl:text></b></td>
+					   <td width='6%' align='left'><big><xsl:call-template name="getName">
+   		                            <xsl:with-param name="name" select="/n1:ClinicalDocument/n1:recordTarget/n1:patientRole/n1:patient/n1:name/n1:family"/>
+                                </xsl:call-template></big></td>
+           <!-- 身份证号码 -->
+			<xsl:if test="/n1:ClinicalDocument/n1:recordTarget/n1:patientRole/n1:patient/n1:id">
+                       		<td width='12%' align='left'><b><xsl:text>身份证号码：</xsl:text></b></td>
+				<td width='9%' align='left'><xsl:value-of select="/n1:ClinicalDocument/n1:recordTarget/n1:patientRole/n1:patient/n1:id/@extension"/></td>	
+           		</xsl:if>
+		<!-- 门诊号码 -->
+                       <td width='12%'   align='left'><b><xsl:text>门诊号码：</xsl:text></b></td>
+					   <td width='6%' align='left'><xsl:value-of select="/n1:ClinicalDocument/n1:recordTarget/n1:patientRole/n1:id/@extension"/></td>	
+            <!-- 性別 --> 
+            <xsl:if test="/n1:ClinicalDocument/n1:recordTarget/n1:patientRole/n1:patient/n1:administrativeGenderCode">
+					   <td width='6%'   align='left'><b><xsl:text>性別：</xsl:text></b></td>
+					   <td width='2%'  align='left'><xsl:variable name="sex" select="/n1:ClinicalDocument/n1:recordTarget/n1:patientRole/n1:patient/n1:administrativeGenderCode/@code"/>
+							   <xsl:choose>
+                               <xsl:when test="$sex='1'">男</xsl:when>
+                               <xsl:when test="$sex='2'">女</xsl:when>
+                               <xsl:when test="$sex='9'">未说明</xsl:when>
+                               <xsl:when test="$sex='0'">未知性别</xsl:when>
+                       </xsl:choose></td>
+                       </xsl:if>		
+            <!-- 文件产生时间 --> 
+                       <td width='14%'   align='left'><b><xsl:text>文件产生时间：</xsl:text></b></td>
+					   <td width='23%' align='left'><xsl:call-template name="formatDate">
+							<xsl:with-param name="date" select="/n1:ClinicalDocument/n1:effectiveTime/@value"/>
+                            <xsl:with-param name="type" select="02"/>
+							</xsl:call-template></td>       
+		   </tr>	
+		   <tr>
+		   <!-- 婚姻状况 --> 
+						<xsl:if test="/n1:ClinicalDocument/n1:recordTarget/n1:patientRole/n1:patient/n1:maritalStatusCode">
+						<td  align='left'><b><xsl:text>婚姻状况：</xsl:text></b></td>
+						<td><xsl:variable name="marry" select="/n1:ClinicalDocument/n1:recordTarget/n1:patientRole/n1:patient/n1:maritalStatusCode/@code "/>
+							   <xsl:choose>
+                               <xsl:when test="$marry='2'">已婚</xsl:when>
+                               <xsl:when test="$marry='1'">未婚</xsl:when>
+                               <xsl:when test="$marry='3'">丧偶</xsl:when>
+                               <xsl:when test="$marry='4'">离婚</xsl:when>
+							   </xsl:choose></td>
+						</xsl:if>	
+			<!-- 出生地 --> 
+						<xsl:if test="/n1:ClinicalDocument/n1:recordTarget/n1:patientRole/n1:patient/n1:birthplace/n1:place/n1:addr">
+						<td  align='left'><b><xsl:text>出生地：</xsl:text></b></td>
+						<td><xsl:value-of select="/n1:ClinicalDocument/n1:recordTarget/n1:patientRole/n1:patient/n1:birthplace/n1:place/n1:addr"/></td>
+						</xsl:if>
+			<!-- 生日 -->
+						<xsl:if test="/n1:ClinicalDocument/n1:recordTarget/n1:patientRole/n1:patient/n1:birthTime">
+						<xsl:if test="/n1:ClinicalDocument/n1:recordTarget/n1:patientRole/n1:patient/n1:birthTime/@value > 150">
+							<td width='6%'  align='left'><b><xsl:text>出生日期：</xsl:text></b></td>
+							<td width='8%' align='left'>
+							<xsl:call-template name="formatDate">
+							<xsl:with-param name="date" select="/n1:ClinicalDocument/n1:recordTarget/n1:patientRole/n1:patient/n1:birthTime/@value"/>	
+							<xsl:with-param name="type" select="03"/></xsl:call-template>
+							</td>
+							</xsl:if>
+
+							<xsl:if test="/n1:ClinicalDocument/n1:recordTarget/n1:patientRole/n1:patient/n1:birthTime/@value &lt; 150">
+							<td width='6%'  align='left'><b><xsl:text>年龄：</xsl:text></b></td>
+							<td width='8%' align='left'>
+							<xsl:call-template name="formatDate">
+							<xsl:with-param name="date" select="/n1:ClinicalDocument/n1:recordTarget/n1:patientRole/n1:patient/n1:birthTime/@value"/>	
+							<xsl:with-param name="type" select="01"/></xsl:call-template>
+							</td>
+							</xsl:if>
+                        			</xsl:if>  
+			<!-- 地址 --> 		
+						<xsl:if test="/n1:ClinicalDocument/n1:recordTarget/n1:patientRole/n1:addr">	
+						<td><b><xsl:text>地址：</xsl:text></b></td>
+						<td colspan="5"><xsl:value-of select="/n1:ClinicalDocument/n1:recordTarget/n1:patientRole/n1:addr"/></td>
+						</xsl:if>
+			</tr>
+</table>
+		<!-- 电话 -->
+		<table border="1" width='100%'  bgcolor="#DDDDDD">
+			<tr>	<xsl:for-each select="/n1:ClinicalDocument/n1:recordTarget/n1:patientRole/n1:telecom">
+	     				<td width='20%'  align='left'><xsl:variable name="tel"  select="@use" />
+						<xsl:choose>
+					   <xsl:when test="$tel='H'">家用电话(H)：</xsl:when>
+						<xsl:when test="$tel ='WP'">公司电话(O)：</xsl:when>
+						<xsl:when test="$tel ='MC'">手机：</xsl:when>
+						<xsl:when test="$tel ='AS'">E-mail：</xsl:when>
+						</xsl:choose>	
+						<xsl:value-of select="@value"/>	
+						</td>
+						</xsl:for-each>
+			</tr>
+		</table>
+		
+		<!-- participaten -->
+		<xsl:for-each select="/n1:ClinicalDocument/n1:participant">
+		
+		<!-- 紧急联系人&配偶 -->
+		<xsl:if  test="@typeCode = 'NOT'">
+			<table  width="100%"  bgcolor="#DDDDDD">
+			<xsl:if test="n1:associatedEntity/@classCode='NOK'">
+			<tr>
+				<td><b>配偶姓名：</b><xsl:value-of select="n1:associatedEntity/n1:associatedPerson/n1:name"/></td>
+			</tr>
+			</xsl:if>
+			<xsl:if test="n1:associatedEntity/@classCode='ECON'">
+			<tr>
+				<td width='230' ><b>紧急联系人：</b><xsl:value-of select="n1:associatedEntity/n1:associatedPerson/n1:name"/></td>
+				<td width="80"><b>关系：</b></td>
+				<xsl:for-each select="/n1:ClinicalDocument/n1:recordTarget/n1:patientRole/n1:telecom">
+	     			<td width='250'  align='left'><xsl:variable name="tel"  select="@use" />
+						<xsl:choose>
+					   <xsl:when test="$tel='H'"><b>家用电话(H)：</b></xsl:when>
+						<xsl:when test="$tel ='WP'"><b>公司电话(O)：</b></xsl:when>
+						<xsl:when test="$tel ='MC'"><b>手机：</b></xsl:when>
+						<xsl:when test="$tel ='AS'"><b>E-mail：</b></xsl:when>
+						</xsl:choose>	
+						<xsl:value-of select="@value"/>	
+					</td>
+				</xsl:for-each>
+				</tr>
+				</xsl:if>
+			</table>
+			</xsl:if>
+
+		<!-- 其他参与者 -->
+		<xsl:if  test="@typeCode = 'VRF'">
+		<table width="100%"  bgcolor="#DDDDDD">
+			<tr>
+				<td width="20%"><b>其他参与者：</b><xsl:value-of select="n1:associatedEntity/n1:associatedPerson/n1:name"/></td>
+				<td width="12%"><b>单位：</b><xsl:value-of select="n1:associatedEntity/n1:scopingOrganization/n1:name"/></td>
+				<td width="18%"><b>医院代码：</b><xsl:value-of select="n1:associatedEntity/n1:id/@extension"/></td>
+				<xsl:if test="n1:associatedEntity/n1:id[2]">
+				<td width="14%"><b>卡号：</b><xsl:value-of select="n1:associatedEntity/n1:id[2]/@extension"/></td>
+				</xsl:if>
+				<xsl:if test="n1:associatedEntity/n1:id[3]">
+				<td width="14%"><b>证号：</b><xsl:value-of select="n1:associatedEntity/n1:id[3]/@extension"/></td>
+				</xsl:if>
+				<td>签属时间：<xsl:call-template name="formatDate">
+							<xsl:with-param name="date" select="/n1:ClinicalDocument/n1:participant[1]/n1:time[1]/@value"/>
+                            <xsl:with-param name="type" select="03"/></xsl:call-template></td>
+			</tr>
+			</table>
+			</xsl:if>
+		</xsl:for-each>
+		
+<!-- 作者  簽章人員 -->
+<table width="100%" bgcolor="#DDDDDD">
+			<tr>
+				<td><b>登录者：</b></td>
+				<td><xsl:value-of select="/n1:ClinicalDocument/n1:author[1]/n1:assignedAuthor[1]/n1:assignedPerson[1]/n1:name[1]"/></td>
+			<xsl:if test="/n1:ClinicalDocument/n1:author[1]/n1:assignedAuthor[1]/n1:representedOrganization[1]/n1:name[1]">
+				<td><b>单位：</b></td>
+				<td><xsl:value-of select="/n1:ClinicalDocument/n1:author[1]/n1:assignedAuthor[1]/n1:representedOrganization[1]/n1:name[1]"/></td>
+			</xsl:if>
+			<xsl:if test="/n1:ClinicalDocument/n1:author[1]/n1:assignedAuthor[1]/n1:id[1]/@extension">
+				<td><b>医院代码：</b></td>
+				<td><xsl:value-of select="/n1:ClinicalDocument/n1:author[1]/n1:assignedAuthor[1]/n1:id[1]/@extension"/></td>
+			</xsl:if>
+			<xsl:if test="/n1:ClinicalDocument/n1:author[1]/n1:assignedAuthor[1]/n1:id[2]/@extension">
+				<td><b>卡号：</b></td>
+				<td><xsl:value-of select="/n1:ClinicalDocument/n1:author[1]/n1:assignedAuthor[1]/n1:id[2]/@extension"/></td>
+			</xsl:if>
+			<xsl:if test="/n1:ClinicalDocument/n1:author[1]/n1:assignedAuthor[1]/n1:id[3]/@extension">
+				<td><b>证件号：</b></td>
+				<td><xsl:value-of select="/n1:ClinicalDocument/n1:author[1]/n1:assignedAuthor[1]/n1:id[3]/@extension"/></td>
+			</xsl:if>
+				<td><b>签署日期：</b></td>
+				<td><xsl:call-template name="formatDate">
+							<xsl:with-param name="date" select="/n1:ClinicalDocument/n1:author[1]/n1:time[1]/@value"/>
+                            <xsl:with-param name="type" select="03"/></xsl:call-template></td>
+			</tr>
+		
+		<xsl:if test="/n1:ClinicalDocument/n1:author[2]">
+			<tr>
+				<td><b>登錄者：</b></td>
+				<td><xsl:value-of select="/n1:ClinicalDocument/n1:author[2]/n1:assignedAuthor[1]/n1:assignedPerson[1]/n1:name[1]"/></td>
+			<xsl:if test="/n1:ClinicalDocument/n1:author[2]/n1:assignedAuthor[1]/n1:representedOrganization[1]/n1:name[1]">
+				<td><b>單位：</b></td>
+				<td><xsl:value-of select="/n1:ClinicalDocument/n1:author[2]/n1:assignedAuthor[1]/n1:representedOrganization[1]/n1:name[1]"/></td>
+			</xsl:if>
+			<xsl:if test="/n1:ClinicalDocument/n1:author[2]/n1:assignedAuthor[1]/n1:id[1]/@extension">
+				<td><b>醫院代碼：</b></td>
+				<td><xsl:value-of select="/n1:ClinicalDocument/n1:author[2]/n1:assignedAuthor[1]/n1:id[1]/@extension"/></td>
+			</xsl:if>
+			<xsl:if test="/n1:ClinicalDocument/n1:author[2]/n1:assignedAuthor[1]/n1:id[2]/@extension">
+				<td><b>卡號：</b></td>
+				<td><xsl:value-of select="/n1:ClinicalDocument/n1:author[2]/n1:assignedAuthor[1]/n1:id[2]/@extension"/></td>
+			</xsl:if>
+						<xsl:if test="/n1:ClinicalDocument/n1:author[2]/n1:assignedAuthor[1]/n1:id[3]/@extension">
+				<td><b>證號：</b></td>
+				<td><xsl:value-of select="/n1:ClinicalDocument/n1:author[2]/n1:assignedAuthor[1]/n1:id[3]/@extension"/></td>
+			</xsl:if>
+				<td><b>簽屬時間：</b></td>
+				<td><xsl:call-template name="formatDate">
+							<xsl:with-param name="date" select="/n1:ClinicalDocument/n1:author[1]/n1:time[1]/@value"/>
+                            <xsl:with-param name="type" select="03"/></xsl:call-template></td>
+			</tr>
+		</xsl:if>
+		
+			<tr>
+				<td><b>最后审核者：</b></td>
+				<td><xsl:value-of select="/n1:ClinicalDocument/n1:legalAuthenticator/n1:assignedEntity/n1:assignedPerson/n1:name[1]"/></td>
+			<xsl:if test="/n1:ClinicalDocument/n1:legalAuthenticator/n1:assignedEntity/n1:representedOrganization/n1:name[1]">
+				<td><b>单位：</b></td>
+				<td><xsl:value-of select="/n1:ClinicalDocument/n1:legalAuthenticator/n1:assignedEntity/n1:representedOrganization/n1:name[1]"/></td>
+			</xsl:if>
+			<xsl:if test="/n1:ClinicalDocument/n1:legalAuthenticator/n1:assignedEntity/n1:id[1]/@extension">
+				<td><b>医院代码：</b></td>
+				<td><xsl:value-of select="/n1:ClinicalDocument/n1:legalAuthenticator/n1:assignedEntity/n1:id[1]/@extension"/></td>
+			</xsl:if>
+			<xsl:if test="/n1:ClinicalDocument/n1:legalAuthenticator/n1:assignedEntity/n1:id[2]/@extension">
+				<td><b>卡号：</b></td>
+				<td><xsl:value-of select="/n1:ClinicalDocument/n1:legalAuthenticator/n1:assignedEntity/n1:id[2]/@extension"/></td>
+			</xsl:if>
+						<xsl:if test="/n1:ClinicalDocument/n1:legalAuthenticator/n1:assignedEntity/n1:id[3]/@extension">
+				<td><b>证件号：</b></td>
+				<td><xsl:value-of select="/n1:ClinicalDocument/n1:legalAuthenticator/n1:assignedEntity/n1:id[3]/@extension"/></td>
+			</xsl:if>
+				<td><b>签署时间：</b></td>
+				<td><xsl:call-template name="formatDate">
+							<xsl:with-param name="date" select="/n1:ClinicalDocument/n1:legalAuthenticator/n1:time[1]/@value"/>
+                            <xsl:with-param name="type" select="03"/></xsl:call-template></td>
+			</tr>
+
+		<xsl:if test="/n1:ClinicalDocument/n1:authenticator[1]">	
+			<tr>
+				<td><b>簽核者：</b></td>
+				<td><xsl:value-of select="/n1:ClinicalDocument/n1:authenticator[1]/n1:assignedEntity[1]/n1:assignedPerson[1]/n1:name[1]"/></td>
+			<xsl:if test="/n1:ClinicalDocument/n1:authenticator[1]/n1:assignedEntity[1]/n1:representedOrganization[1]/n1:name[1]">
+				<td><b>單位：</b></td>
+				<td><xsl:value-of select="/n1:ClinicalDocument/n1:authenticator[1]/n1:assignedEntity[1]/n1:representedOrganization[1]/n1:name[1]"/></td>
+			</xsl:if>
+			<xsl:if test="/n1:ClinicalDocument/n1:authenticator[1]/n1:assignedEntity[1]/n1:id[1]/@extension">
+				<td><b>醫院代碼：</b></td>
+				<td><xsl:value-of select="/n1:ClinicalDocument/n1:authenticator[1]/n1:assignedEntity[1]/n1:id[1]/@extension"/></td>
+			</xsl:if>
+			<xsl:if test="/n1:ClinicalDocument/n1:authenticator[1]/n1:assignedEntity[1]/n1:id[2]/@extension">
+				<td><b>卡號：</b></td>
+				<td><xsl:value-of select="/n1:ClinicalDocument/n1:authenticator[1]/n1:assignedEntity[1]/n1:id[2]/@extension"/></td>
+			</xsl:if>
+						<xsl:if test="/n1:ClinicalDocument/n1:authenticator[1]/n1:assignedEntity[1]/n1:id[3]/@extension">
+				<td><b>證號：</b></td>
+				<td><xsl:value-of select="/n1:ClinicalDocument/n1:authenticator[1]/n1:assignedEntity[1]/n1:id[3]/@extension"/></td>
+			</xsl:if>
+				<td><b>簽屬時間：</b></td>
+				<td><xsl:call-template name="formatDate">
+							<xsl:with-param name="date" select="/n1:ClinicalDocument/n1:authenticator[1]/n1:time[1]/@value"/>
+                            <xsl:with-param name="type" select="03"/></xsl:call-template></td>
+			</tr>
+		</xsl:if>	
+			
+		<xsl:if test="/n1:ClinicalDocument/n1:authenticator[2]">	
+			<tr>
+				<td><b>簽核者：</b></td>
+				<td><xsl:value-of select="/n1:ClinicalDocument/n1:authenticator[2]/n1:assignedEntity[1]/n1:assignedPerson[1]/n1:name[1]"/></td>
+			<xsl:if test="/n1:ClinicalDocument/n1:authenticator[2]/n1:assignedEntity[1]/n1:representedOrganization[1]/n1:name[1]">
+				<td><b>單位：</b></td>
+				<td><xsl:value-of select="/n1:ClinicalDocument/n1:authenticator[2]/n1:assignedEntity[1]/n1:representedOrganization[1]/n1:name[1]"/></td>
+			</xsl:if>
+			<xsl:if test="/n1:ClinicalDocument/n1:authenticator[2]/n1:assignedEntity[1]/n1:id[1]/@extension">
+				<td><b>醫院代碼：</b></td>
+				<td><xsl:value-of select="/n1:ClinicalDocument/n1:authenticator[2]/n1:assignedEntity[1]/n1:id[1]/@extension"/></td>
+			</xsl:if>
+			<xsl:if test="/n1:ClinicalDocument/n1:authenticator[2]/n1:assignedEntity[1]/n1:id[2]/@extension">
+				<td><b>卡號：</b></td>
+				<td><xsl:value-of select="/n1:ClinicalDocument/n1:authenticator[2]/n1:assignedEntity[1]/n1:id[2]/@extension"/></td>
+			</xsl:if>
+						<xsl:if test="/n1:ClinicalDocument/n1:authenticator[2]/n1:assignedEntity[1]/n1:id[3]/@extension">
+				<td><b>證號：</b></td>
+				<td><xsl:value-of select="/n1:ClinicalDocument/n1:authenticator[2]/n1:assignedEntity[1]/n1:id[3]/@extension"/></td>
+			</xsl:if>
+				<td><b>簽屬時間：</b></td>
+				<td><xsl:call-template name="formatDate">
+							<xsl:with-param name="date" select="/n1:ClinicalDocument/n1:authenticator[2]/n1:time[1]/@value"/>
+                            <xsl:with-param name="type" select="03"/></xsl:call-template></td>
+			</tr>
+		</xsl:if>		
+		
+		<xsl:if test="/n1:ClinicalDocument/n1:dataEnterer">		
+			<tr>
+				<td><b>輔助紀錄人：</b></td>
+				<td><xsl:value-of select="/n1:ClinicalDocument/n1:dataEnterer/n1:assignedEntity/n1:assignedPerson/n1:name[1]"/></td>
+			<xsl:if test="/n1:ClinicalDocument/n1:dataEnterer/n1:assignedEntity/n1:representedOrganization/n1:name[1]">
+				<td><b>單位：</b></td>
+				<td><xsl:value-of select="/n1:ClinicalDocument/n1:dataEnterer/n1:assignedEntity/n1:representedOrganization/n1:name[1]"/></td>
+			</xsl:if>
+			<xsl:if test="/n1:ClinicalDocument/n1:dataEnterer/n1:assignedEntity/n1:id[1]/@extension">
+				<td><b>醫院代碼：</b></td>
+				<td><xsl:value-of select="/n1:ClinicalDocument/n1:dataEnterer/n1:assignedEntity/n1:id[1]/@extension"/></td>
+			</xsl:if>
+			<xsl:if test="/n1:ClinicalDocument/n1:dataEnterer/n1:assignedEntity/n1:id[2]/@extension">
+				<td><b>卡號：</b></td>
+				<td><xsl:value-of select="/n1:ClinicalDocument/n1:dataEnterer/n1:assignedEntity/n1:id[2]/@extension"/></td>
+			</xsl:if>
+						<xsl:if test="/n1:ClinicalDocument/n1:dataEnterer/n1:assignedEntity/n1:id[3]/@extension">
+				<td><b>證號：</b></td>
+				<td><xsl:value-of select="/n1:ClinicalDocument/n1:dataEnterer/n1:assignedEntity/n1:id[3]/@extension"/></td>
+			</xsl:if>
+				<td><b>紀錄時間：</b></td>
+				<td><xsl:call-template name="formatDate">
+							<xsl:with-param name="date" select="/n1:ClinicalDocument/n1:dataEnterer/n1:time[1]/@value"/>
+                            <xsl:with-param name="type" select="03"/></xsl:call-template></td>
+			</tr>
+		</xsl:if>	
+</table>
+
+</td>
+</tr>
+	<!-- Body -->
+	<tr bgcolor="#EEEEDD">
+		<td>
+		<xsl:apply-templates select="n1:component/n1:structuredBody"/> 
+　</td>
+	</tr>
+</table>
+		<p align="right"><xsl:call-template name="bottomline"/></p>
+ 		            </body>
+        </html>
+</xsl:template>
+    
+<!-- Get a Name  -->
+<xsl:template name="getName">
+    <xsl:param name="name"/>
+    <xsl:choose>
+         <xsl:when test="$name/n1:family">
+              <xsl:value-of select="$name/n1:given"/>
+              <xsl:text> </xsl:text>
+              <xsl:value-of select="$name/n1:family"/>
+              <xsl:text> </xsl:text>
+              <xsl:if test="$name/n1:suffix">
+                  <xsl:text>, </xsl:text>
+                  <xsl:value-of select="$name/n1:suffix"/>
+              </xsl:if>
+          </xsl:when>
+          <xsl:otherwise>
+               <xsl:value-of select="$name"/>
+          </xsl:otherwise>
+    </xsl:choose>
+</xsl:template>
+
+
+
+<!--  Format Date 
+    
+      outputs a date in Month Day, Year form
+      e.g., 19991207  ==> December 07, 1999
+-->
+
+    <!--時間格式轉換 
+        參數：
+        1. date：傳入之時間
+        2. type：需求樣式。
+            01 -> YY.MM.DD (民國)
+            02 -> YYYY-MM-DD HH:mm:SS
+            03 -> YYYY.MM.DD
+    -->
+    <xsl:template name="formatDate">
+        <xsl:param name="date"/>
+        <xsl:param name="type"/>
+        <xsl:variable name="aYear" select="substring($date,1,4)"/>
+        <xsl:variable name="aMonth" select="substring($date,5,2)"/>
+        <xsl:variable name="aDay" select="substring($date,7,2)"/>
+        <xsl:variable name="aHour" select="substring($date,9,2)"/>
+        <xsl:variable name="aMin" select="substring($date,11,2)"/>
+        <xsl:variable name="aSec" select="substring($date,13,2)"/>
+        <xsl:variable name="LocalYear" select="$aYear - 1911"/>        
+        <xsl:choose>
+	    <xsl:when test="$type = '01'">
+                <xsl:value-of select="$aYear"/>
+            </xsl:when>
+            <xsl:when test="$type = '02'">
+                <xsl:value-of select="$aYear"/>
+                <xsl:text>-</xsl:text>
+                <xsl:value-of select="$aMonth"/>
+                <xsl:text>-</xsl:text>
+                <xsl:value-of select="$aDay"/>
+                <xsl:text>  </xsl:text>
+                <xsl:value-of select="$aHour"/>
+                <xsl:text>:</xsl:text>
+                <xsl:value-of select="$aMin"/>
+                <xsl:text>:</xsl:text>
+                <xsl:value-of select="$aSec"/>
+            </xsl:when>
+            <xsl:when test="$type = '03'">
+                <xsl:value-of select="$aYear"/>
+                <xsl:text>-</xsl:text>
+                <xsl:value-of select="$aMonth"/>
+                <xsl:text>-</xsl:text>
+                <xsl:value-of select="$aDay"/>
+            </xsl:when>
+        </xsl:choose>
+    </xsl:template>
+  
+
+
+<!-- StructuredBody -->
+<xsl:template match="n1:component/n1:structuredBody">
+<table border="1" width="100%">
+	
+		<xsl:apply-templates select="n1:component/n1:section"/>
+	
+</table>
+</xsl:template>
+
+<!-- Component/Section -->    
+<xsl:template match="n1:component/n1:section">
+<tr>
+<td>	<xsl:apply-templates select="n1:title"/></td>
+		
+<td>	<xsl:apply-templates select="n1:text"/></td>
+</tr>					
+        <xsl:apply-templates select="n1:component/n1:section"/>
+     
+
+</xsl:template>
+
+<!--   Title  -->
+<xsl:template match="n1:title">
+	<h3><span style="font-weight:bold;">	
+	<xsl:value-of select="."></xsl:value-of>
+	</span></h3>
+</xsl:template>
+
+<!--   Text   -->
+<xsl:template match="n1:text">	
+	<xsl:apply-templates />	
+</xsl:template>
+
+<!--   paragraph  -->
+<xsl:template match="n1:paragraph">
+	<xsl:apply-templates/>
+	<br/>
+</xsl:template>
+
+<!--     Content w/ deleted text is hidden -->
+<xsl:template match="n1:content[@revised='delete']"/>
+
+<!--   content  -->
+<xsl:template match="n1:content">
+
+ <xsl:value-of select="."/> (<xsl:value-of select="@ID"/>)
+	
+</xsl:template>
+
+
+<!--   list  -->
+<xsl:template match="n1:list">
+    <xsl:if test="n1:caption">
+        <span style="font-weight:bold; ">
+        <xsl:apply-templates select="n1:caption"/>
+        </span>
+    </xsl:if>
+   <ul>
+    <xsl:for-each select="n1:item">
+	<li>
+          <xsl:apply-templates />
+	</li>
+     </xsl:for-each>
+    </ul>	
+</xsl:template>
+
+<xsl:template match="n1:list[@listType='ordered']">
+    <xsl:if test="n1:caption">
+        <span style="font-weight:bold; ">
+        <xsl:apply-templates select="n1:caption"/>
+        </span>
+    </xsl:if>
+   <ol>
+    <xsl:for-each select="n1:item">
+	<li>
+          <xsl:apply-templates />
+	</li>
+     </xsl:for-each>
+    </ol>	
+</xsl:template>
+	
+
+<!--   caption  -->
+<xsl:template match="n1:caption">  
+	<xsl:apply-templates/>
+	<xsl:text>: </xsl:text>
+</xsl:template>
+	
+	<!--      Tables   -->
+	<xsl:template match="n1:table/@*|n1:thead/@*|n1:tfoot/@*|n1:tbody/@*|n1:colgroup/@*|n1:col/@*|n1:tr/@*|n1:th/@*|n1:td/@*">
+		<xsl:copy>
+			<xsl:apply-templates/>
+		</xsl:copy>
+	</xsl:template>
+
+	<xsl:template match="n1:table">
+		<table>	
+			<xsl:apply-templates/>
+		</table>	
+	</xsl:template>
+	
+	<xsl:template match="n1:thead">
+		<thead>	
+			<xsl:apply-templates/>
+		</thead>	
+	</xsl:template>
+
+	<xsl:template match="n1:tfoot">
+		<tfoot>	
+			<xsl:apply-templates/>
+		</tfoot>	
+	</xsl:template>
+
+	<xsl:template match="n1:tbody">
+		<tbody>	
+			<xsl:apply-templates/>
+		</tbody>	
+	</xsl:template>
+
+	<xsl:template match="n1:colgroup">
+		<colgroup>	
+			<xsl:apply-templates/>
+		</colgroup>	
+	</xsl:template>
+
+	<xsl:template match="n1:col">
+		<col>	
+			<xsl:apply-templates/>
+		</col>	
+	</xsl:template>
+
+	<xsl:template match="n1:tr">
+		<tr>	
+			<xsl:apply-templates/>
+		</tr>	
+	</xsl:template>
+
+	<xsl:template match="n1:th">
+		<th>	
+			<xsl:apply-templates/>
+		</th>	
+	</xsl:template>
+
+	<xsl:template match="n1:td">
+		<td>	
+			<xsl:apply-templates/>
+		</td>	
+	</xsl:template>
+
+	<xsl:template match="n1:table/n1:caption">
+		<span style="font-weight:bold; ">	
+			<xsl:apply-templates/>
+		</span>	
+	</xsl:template>
+
+<!--   RenderMultiMedia 
+
+         this currently only handles GIF's and JPEG's.  It could, however,
+	 be extended by including other image MIME types in the predicate
+	 and/or by generating <object> or <applet> tag with the correct
+	 params depending on the media type  @ID  =$imageRef     referencedObject
+ -->
+     <xsl:template match="n1:renderMultiMedia">
+	<xsl:variable name="imageRef" select="@referencedObject"/>
+        <xsl:choose>
+             <xsl:when test="//n1:regionOfInterest[@ID=$imageRef]">
+             <!-- Here is where the Region of Interest image referencing goes -->
+                  <xsl:if test='//n1:regionOfInterest[@ID=$imageRef]//n1:observationMedia/n1:value[@mediaType="image/gif" or @mediaType="image/jpeg"]'>
+			<br clear='all'/>
+		       <xsl:element name='img'>
+			    <xsl:attribute name='src'>graphics/
+				<xsl:value-of select='//n1:regionOfInterest[@ID=$imageRef]//n1:observationMedia/n1:value/n1:reference/@value'/>
+			    </xsl:attribute>
+		       </xsl:element>
+	          </xsl:if>
+             </xsl:when>
+             <xsl:otherwise>
+             <!-- Here is where the direct MultiMedia image referencing goes -->
+                  <xsl:if test='//n1:observationMedia[@ID=$imageRef]/n1:value[@mediaType="image/gif" or @mediaType="image/jpeg"]'>
+			<br clear='all'/>
+		       <xsl:element name='img'>
+			    <xsl:attribute name='src'>graphics/
+				<xsl:value-of select='//n1:observationMedia[@ID=$imageRef]/n1:value/n1:reference/@value'/>
+			    </xsl:attribute>
+		       </xsl:element>
+	          </xsl:if>              
+             </xsl:otherwise>
+        </xsl:choose>	
+     </xsl:template>
+
+<!-- 	Stylecode processing   
+	  Supports Bold, Underline and Italics display
+
+-->
+
+	<xsl:template match="//n1:*[@styleCode]">
+
+	<xsl:if test="@styleCode='Bold'">
+	     <xsl:element name='b'>				
+	          <xsl:apply-templates/>
+	     </xsl:element>	
+	</xsl:if> 
+
+	<xsl:if test="@styleCode='Italics'">
+	     <xsl:element name='i'>				
+	          <xsl:apply-templates/>
+	     </xsl:element>	
+	</xsl:if>
+
+	<xsl:if test="@styleCode='Underline'">
+	     <xsl:element name='u'>				
+	          <xsl:apply-templates/>
+	     </xsl:element>	
+	</xsl:if>
+
+	   <xsl:if test="contains(@styleCode,'Bold') and contains(@styleCode,'Italics') and not (contains(@styleCode, 'Underline'))">
+	     <xsl:element name='b'>
+		<xsl:element name='i'>				
+	          <xsl:apply-templates/>
+		</xsl:element>
+	     </xsl:element>	
+	   </xsl:if>
+
+	   <xsl:if test="contains(@styleCode,'Bold') and contains(@styleCode,'Underline') and not (contains(@styleCode, 'Italics'))">
+	     <xsl:element name='b'>
+		<xsl:element name='u'>				
+	          <xsl:apply-templates/>
+		</xsl:element>
+	     </xsl:element>	
+	   </xsl:if>
+
+	   <xsl:if test="contains(@styleCode,'Italics') and contains(@styleCode,'Underline') and not (contains(@styleCode, 'Bold'))">
+	     <xsl:element name='i'>
+		<xsl:element name='u'>				
+	          <xsl:apply-templates/>
+		</xsl:element>
+	     </xsl:element>	
+	   </xsl:if>
+
+	   <xsl:if test="contains(@styleCode,'Italics') and contains(@styleCode,'Underline') and contains(@styleCode, 'Bold')">
+	     	<xsl:element name='b'>
+		<xsl:element name='i'>
+		<xsl:element name='u'>				
+	            <xsl:apply-templates/>
+		</xsl:element>
+		</xsl:element>
+	     	</xsl:element>	
+	   </xsl:if>
+
+	</xsl:template>
+
+<!-- 	Superscript or Subscript   -->
+	<xsl:template match="n1:sup">
+	     <xsl:element name='sup'>				
+	          <xsl:apply-templates/>
+	     </xsl:element>	
+	</xsl:template>
+	<xsl:template match="n1:sub">
+	     <xsl:element name='sub'>				
+	          <xsl:apply-templates/>
+	     </xsl:element>	
+	</xsl:template>
+
+	<!--  Bottomline  -->
+     <xsl:template name="bottomline">
+     <b><xsl:text>Signed by: </xsl:text></b>
+	<xsl:call-template name="getName">
+           <xsl:with-param name="name" 
+                select="/n1:ClinicalDocument/n1:legalAuthenticator/n1:assignedEntity/n1:assignedPerson/n1:name"/>
+        </xsl:call-template>
+        <xsl:text> on </xsl:text>
+	       <xsl:call-template name="formatDate">
+   	           <xsl:with-param name="date" 
+ 	               select="//n1:ClinicalDocument/n1:legalAuthenticator/n1:time/@value"/>
+        </xsl:call-template>
+      </xsl:template>
+      
+    <!-- 婚姻格式轉換 -->
+
+</xsl:stylesheet>
